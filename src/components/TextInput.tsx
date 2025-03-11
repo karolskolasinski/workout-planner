@@ -11,12 +11,10 @@ const TextInput = (props: InputProps) => {
 
   return (
     <div className="flex flex-col gap-2 leading-none">
-      <label
-        className=""
-        htmlFor={props.id}
-      >
+      <label htmlFor={props.id}>
         {props.label}
       </label>
+
       <input
         {...props}
         className={`${bgClass} h-12 rounded-lg border ${borderClass} p-4`}

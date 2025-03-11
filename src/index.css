@@ -7,3 +7,31 @@ body {
     background: #F0EAF8;
     color: #000853;
 }
+
+.range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #761BE4;
+    border-radius: 100%;
+}
+
+.slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: #761BE4;
+    border-radius: 100%;
+}
+
+.tooltip:before {
+    position: absolute;
+    top: -5px;
+    content: "";
+    width: 9px;
+    height: 9px;
+    border-top: 1px solid #CBB6E5;
+    border-right: 1px solid #CBB6E5;
+    transform: rotate(-45deg);
+    background: #FAF9FA;
+}

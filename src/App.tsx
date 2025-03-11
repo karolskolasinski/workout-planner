@@ -1,4 +1,5 @@
 import TextInput from "./components/TextInput.tsx";
+import RangeInput from "./components/RangeInput.tsx";
 
 function App() {
   return (
@@ -12,6 +13,13 @@ function App() {
       <TextInput id="last-name" label="Last Name" />
 
       <TextInput id="email" label="Email Address" type="email" />
+
+      <RangeInput
+        id="age"
+        label="Age"
+        min="8"
+        max="100"
+      />
     </div>
   );
 }
