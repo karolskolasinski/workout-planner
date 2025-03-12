@@ -39,7 +39,6 @@ const RangeInput = (props: InputProps) => {
             type="range"
             defaultValue={props.min}
             className="appearance-none bg-[#CBB6E5] h-1 rounded-lg range w-full"
-            step="1"
             onChange={(e) => setValue(Number((e.target as HTMLInputElement).value))}
           />
 

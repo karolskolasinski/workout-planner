@@ -1,6 +1,7 @@
 import TextInput from "./components/TextInput.tsx";
 import RangeInput from "./components/RangeInput.tsx";
 import FileInput from "./components/FileInput.tsx";
+import DateTimeInput from "./components/DateTimeInput.tsx";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         label="Age"
         min="8"
         max="100"
+        step="1"
       />
 
       <FileInput
@@ -27,6 +29,12 @@ function App() {
         label="Photo"
         type="file"
       />
+
+      <h1 className="text-2xl py-2">
+        Your workout
+      </h1>
+
+      <DateTimeInput id="datetime" label="Date" />
     </div>
   );
 }
