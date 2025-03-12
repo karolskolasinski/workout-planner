@@ -40,6 +40,7 @@ function App() {
         id="first-name"
         name="first-name"
         label="First Name"
+        required={true}
         onTextInput={setFirstName}
       />
 
@@ -47,6 +48,7 @@ function App() {
         id="last-name"
         name="last-name"
         label="Last Name"
+        required={true}
         onTextInput={setLastName}
       />
 
@@ -55,6 +57,7 @@ function App() {
         name="email"
         label="Email Address"
         type="email"
+        required={true}
         onTextInput={setEmail}
       />
 
@@ -65,6 +68,7 @@ function App() {
         min="8"
         max="100"
         step="1"
+        required={true}
         onRangeInput={setAge}
       />
 
@@ -73,6 +77,7 @@ function App() {
         name="photo"
         label="Photo"
         type="file"
+        required={true}
         onFileSelect={setSelectedFile}
       />
 
