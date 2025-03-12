@@ -2,11 +2,10 @@ import TextInput from "./components/TextInput.tsx";
 import RangeInput from "./components/RangeInput.tsx";
 import FileInput from "./components/FileInput.tsx";
 import DateTimeInput from "./components/DateTimeInput.tsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function App() {
-  // const [isActive, setIsActive] = useState(false);
-  const isActive = true;
+  const [isActive, setIsActive] = useState(false);
   const activeClass = isActive
     ? "bg-[#761BE4] hover:bg-[#6A19CD] cursor-pointer"
     : "bg-[#CBB6E5] cursor-not-allowed";
@@ -18,6 +17,17 @@ function App() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedDateTime, setSelectedDateTime] = useState<Date | null>(null);
 
+  useEffect(() => {
+    const isFormComplete = firstName !== "" &&
+      lastName !== "" &&
+      email !== "" &&
+      age >= 8 &&
+      selectedFile !== null &&
+      selectedDateTime !== null;
+
+    setIsActive(isFormComplete);
+  }, [firstName, lastName, email, age, selectedFile, selectedDateTime]);
+
   const onSubmitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData();
@@ -27,7 +37,13 @@ function App() {
     formData.append("age", age.toString());
     formData.append("photo", selectedFile as Blob);
     formData.append("date-time", selectedDateTime?.toISOString() as string);
-    console.log(firstName, lastName, email, age, selectedFile, selectedDateTime);
+
+    // console group
+    console.group("Form Data");
+    for (const [key, value] of formData.entries()) {
+      console.log(key, key === "photo" ? (value as File).name : value);
+    }
+    console.groupEnd();
   };
 
   return (

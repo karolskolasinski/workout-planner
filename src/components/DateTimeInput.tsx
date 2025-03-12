@@ -19,6 +19,7 @@ type DayData = {
 const WEEKDAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
 
 const DateTimeInput = (props: InputProps) => {
+  const { onDateTimeSelect } = props;
   const [currentDate, setCurrentDate] = useState(new Date());
   const [infoText, setInfoText] = useState("");
   const [holidays, setHolidays] = useState<DayData[]>([]);
@@ -35,11 +36,13 @@ const DateTimeInput = (props: InputProps) => {
     setCurrentDate(subMonths(currentDate, 1));
     setSelectedDate(null);
     setInfoText("");
+    onDateTimeSelect(null);
   };
   const handleNextMonth = () => {
     setCurrentDate(addMonths(currentDate, 1));
     setSelectedDate(null);
     setInfoText("");
+    onDateTimeSelect(null);
   };
 
   const handleDateSelect = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, day: Date) => {

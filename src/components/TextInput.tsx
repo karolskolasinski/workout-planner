@@ -13,7 +13,10 @@ const TextInput = (props: InputProps) => {
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setErrorMsg(e.target.validationMessage);
-    props.onTextInput(value);
+    if (e.target.validity.valid) {
+      setErrorMsg("");
+      props.onTextInput(value);
+    }
   };
 
   const borderClass = errorMsg ? "border-[#ED4545] border-2" : "border-[#CBB6E5]";

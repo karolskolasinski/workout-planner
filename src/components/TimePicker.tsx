@@ -19,6 +19,9 @@ export const TimePicker = (props: TimePickerProps) => {
       newDate.setHours(hours);
       newDate.setMinutes(minutes);
       onDateTimeSelect(newDate);
+    } else {
+      setSelectedTime(null);
+      onDateTimeSelect(null);
     }
   };
 
