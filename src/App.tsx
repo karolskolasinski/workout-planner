@@ -35,6 +35,10 @@ function App() {
       </h1>
 
       <DateTimeInput />
+
+      <button className="w-full h-[45px] bg-[#761BE4] text-white rounded-[5px] hover:bg-[#6A19CD] text-center cursor-pointer">
+        Send Application
+      </button>
     </div>
   );
 }

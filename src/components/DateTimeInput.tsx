@@ -1,17 +1,62 @@
-import { useState } from "react";
-import { addMonths, format, subMonths } from "date-fns";
+import { useEffect, useState } from "react";
+import { addMonths, eachDayOfInterval, format, isEqual, startOfDay, subMonths } from "date-fns";
+import { infoBox } from "./infoBox.tsx";
 import { TimePicker } from "./TimePicker.tsx";
+
+type Holiday = {
+  country: string;
+  date: string;
+  day: string;
+  iso: string;
+  name: string;
+  type: string;
+  year: number;
+};
+
+const WEEKDAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
 
 const DateTimeInput = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-  const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
-  const firstDayIndex = startOfMonth.getDay();
-  const [selectedDate, setSelectedDate] = useState<number | null>(null);
+  const [infoText, setInfoText] = useState("");
+  const [holidays, setHolidays] = useState<Holiday[]>([]);
+
+  const start = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+  const end = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+  const daysInMonth = eachDayOfInterval({ start, end });
+
+  const firstDayIndex = start.getDay();
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const handlePrevMonth = () => setCurrentDate(subMonths(currentDate, 1));
   const handleNextMonth = () => setCurrentDate(addMonths(currentDate, 1));
-  const handleDateSelect = (day: number) => setSelectedDate(day);
+
+  const handleDateSelect = (day: Date) => {
+    const selectedDate = startOfDay(day);
+    const holiday = holidays.find((holiday) => {
+      const holidayDate = startOfDay(new Date(holiday.date));
+      return isEqual(holidayDate, selectedDate);
+    });
+
+    setInfoText(holiday ? "It is " + holiday.name : "");
+    setSelectedDate(day);
+  };
+
+  useEffect(() => {
+    const fetchHolidays = async () => {
+      try {
+        const url = `${import.meta.env.VITE_API_URL}?country=PL&type=national_holiday`;
+        const response = await fetch(url, {
+          headers: { "X-Api-Key": import.meta.env.VITE_API_KEY },
+        });
+        const data = await response.json();
+        setHolidays(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchHolidays();
+  }, [currentDate]);
 
   return (
     <div className="flex gap-6">
@@ -44,7 +89,7 @@ const DateTimeInput = () => {
           </div>
 
           <div className="grid grid-cols-7 text-center text-sm">
-            {["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].map((day) => <div key={day}>{day}</div>)}
+            {WEEKDAYS.map((day) => <div key={day}>{day}</div>)}
           </div>
 
           <div className="grid grid-cols-7 text-center mt-2">
@@ -52,28 +97,42 @@ const DateTimeInput = () => {
               <div key={`empty-${i}`} />
             ))}
 
-            {Array.from({ length: daysInMonth }).map((_, i) => {
-              const day = i + 1;
-              const isSelected = selectedDate === day;
-              const indicator = "hover:bg-[#761BE4] hover:text-white";
-              const selectedClass = isSelected ? "bg-[#761BE4] text-white" : "";
-              const today = new Date();
-              const isToday = currentDate.getMonth() === today.getMonth() &&
-                day === today.getDate();
-              const holidayClass = isToday ? "text-[#898DA9]" : "";
+            {daysInMonth.map((d: Date, i: number) => {
+              const normalizedDate = startOfDay(d);
+
+              const isSelected = selectedDate
+                ? isEqual(startOfDay(selectedDate), normalizedDate)
+                : false;
+              const isHoliday = holidays.some((holiday: Holiday) => {
+                const holidayDate = startOfDay(new Date(holiday.date));
+                return isEqual(holidayDate, normalizedDate);
+              });
+              const isSunday = d.getDay() === 0;
+              const isToday = isEqual(startOfDay(new Date()), normalizedDate);
+
+              const baseClass = "w-8 h-8 m-0.5 flex items-center justify-center rounded-full";
+              const hoverClass = "hover:bg-[#761BE4] hover:text-white";
+              let statusClass = "";
+              if (isSelected) {
+                statusClass = "bg-[#761BE4] text-white";
+              } else if (isHoliday || isSunday || isToday) {
+                statusClass = "text-[#898DA9]";
+              }
 
               return (
                 <button
-                  key={day}
-                  onClick={() => handleDateSelect(day)}
-                  className={`w-8 h-8 m-0.5 flex items-center justify-center rounded-full ${indicator} ${selectedClass} ${holidayClass}`}
+                  key={`day-${i}`}
+                  onClick={() => handleDateSelect(d)}
+                  className={`${baseClass} ${hoverClass} ${statusClass}`}
                 >
-                  {day}
+                  {format(d, "d")}
                 </button>
               );
             })}
           </div>
         </div>
+
+        {infoText && infoBox("info", infoText)}
       </div>
 
       {selectedDate && <TimePicker />}
