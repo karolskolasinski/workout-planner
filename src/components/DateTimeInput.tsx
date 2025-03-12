@@ -32,13 +32,15 @@ const DateTimeInput = (props: InputProps) => {
   const firstDayIndex = start.getDay();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
-  const handlePrevMonth = () => {
+  const handlePrevMonth = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
     setCurrentDate(subMonths(currentDate, 1));
     setSelectedDate(null);
     setInfoText("");
     onDateTimeSelect(null);
   };
-  const handleNextMonth = () => {
+  const handleNextMonth = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
     setCurrentDate(addMonths(currentDate, 1));
     setSelectedDate(null);
     setInfoText("");
@@ -65,7 +67,13 @@ const DateTimeInput = (props: InputProps) => {
     infoText += observance ? "It is " + observance.name : "";
 
     setInfoText(infoText);
-    setSelectedDate(day);
+    const isSunday = day.getDay() === 0;
+    if (!holiday && !isSunday) {
+      setSelectedDate(day);
+    } else {
+      setSelectedDate(null);
+      onDateTimeSelect(null);
+    }
   };
 
   useEffect(() => {
