@@ -4,6 +4,11 @@ import FileInput from "./components/FileInput.tsx";
 import DateTimeInput from "./components/DateTimeInput.tsx";
 
 function App() {
+  const isActive = false;
+  const activeClass = isActive
+    ? "bg-[#761BE4] hover:bg-[#6A19CD] cursor-pointer"
+    : "bg-[#CBB6E5] cursor-not-allowed";
+
   return (
     <div className="mx-auto w-[426px] py-30 flex flex-col gap-6">
       <h1 className="text-2xl pb-2">
@@ -36,7 +41,7 @@ function App() {
 
       <DateTimeInput />
 
-      <button className="w-full h-[45px] bg-[#761BE4] text-white rounded-[5px] hover:bg-[#6A19CD] text-center cursor-pointer">
+      <button className={`w-full h-[45px]  text-white rounded-[5px] ${activeClass} text-center`}>
         Send Application
       </button>
     </div>

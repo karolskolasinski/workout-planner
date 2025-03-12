@@ -3,7 +3,7 @@ import { addMonths, eachDayOfInterval, format, isEqual, startOfDay, subMonths } 
 import { infoBox } from "./infoBox.tsx";
 import { TimePicker } from "./TimePicker.tsx";
 
-type Holiday = {
+type DayData = {
   country: string;
   date: string;
   day: string;
@@ -18,7 +18,8 @@ const WEEKDAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
 const DateTimeInput = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [infoText, setInfoText] = useState("");
-  const [holidays, setHolidays] = useState<Holiday[]>([]);
+  const [holidays, setHolidays] = useState<DayData[]>([]);
+  const [observances, setObservances] = useState<DayData[]>([]);
 
   const start = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
   const end = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
@@ -27,17 +28,36 @@ const DateTimeInput = () => {
   const firstDayIndex = start.getDay();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
-  const handlePrevMonth = () => setCurrentDate(subMonths(currentDate, 1));
-  const handleNextMonth = () => setCurrentDate(addMonths(currentDate, 1));
+  const handlePrevMonth = () => {
+    setCurrentDate(subMonths(currentDate, 1));
+    setSelectedDate(null);
+    setInfoText("");
+  };
+  const handleNextMonth = () => {
+    setCurrentDate(addMonths(currentDate, 1));
+    setSelectedDate(null);
+    setInfoText("");
+  };
 
   const handleDateSelect = (day: Date) => {
+    let infoText = "";
     const selectedDate = startOfDay(day);
     const holiday = holidays.find((holiday) => {
       const holidayDate = startOfDay(new Date(holiday.date));
       return isEqual(holidayDate, selectedDate);
     });
+    infoText = holiday ? "It is " + holiday.name : "";
 
-    setInfoText(holiday ? "It is " + holiday.name : "");
+    const observance = observances.find((observance) => {
+      const observanceDate = startOfDay(new Date(observance.date));
+      return isEqual(observanceDate, selectedDate);
+    });
+    if (holiday && observance) {
+      infoText += " and ";
+    }
+    infoText += observance ? "It is " + observance.name : "";
+
+    setInfoText(infoText);
     setSelectedDate(day);
   };
 
@@ -55,7 +75,21 @@ const DateTimeInput = () => {
       }
     };
 
+    const fetchObservance = async () => {
+      try {
+        const url = `${import.meta.env.VITE_API_URL}?country=PL&type=observance`;
+        const response = await fetch(url, {
+          headers: { "X-Api-Key": import.meta.env.VITE_API_KEY },
+        });
+        const data = await response.json();
+        setObservances(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
     fetchHolidays();
+    fetchObservance();
   }, [currentDate]);
 
   return (
@@ -69,7 +103,7 @@ const DateTimeInput = () => {
               <svg
                 viewBox="0 0 11 14"
                 xmlns="http://www.w3.org/2000/svg"
-                className="min-w-4 h-4 fill-[#CBB6E5] hover:fill-[#761BE4]"
+                className="min-w-4 h-4 fill-[#CBB6E5] hover:fill-[#761BE4] cursor-pointer"
               >
                 <path d="M0.499999 7.86602C-0.166668 7.48112 -0.166667 6.51888 0.5 6.13397L9.5 0.937821C10.1667 0.552921 11 1.03405 11 1.80385L11 12.1962C11 12.966 10.1667 13.4471 9.5 13.0622L0.499999 7.86602Z" />
               </svg>
@@ -81,7 +115,7 @@ const DateTimeInput = () => {
               <svg
                 viewBox="0 0 11 14"
                 xmlns="http://www.w3.org/2000/svg"
-                className="min-w-4 h-4 fill-[#CBB6E5] hover:fill-[#761BE4]"
+                className="min-w-4 h-4 fill-[#CBB6E5] hover:fill-[#761BE4] cursor-pointer"
               >
                 <path d="M10.5 7.86602C11.1667 7.48112 11.1667 6.51888 10.5 6.13397L1.5 0.937821C0.833334 0.552921 6.10471e-07 1.03405 5.76822e-07 1.80385L1.2256e-07 12.1962C8.8911e-08 12.966 0.833333 13.4471 1.5 13.0622L10.5 7.86602Z" />
               </svg>
@@ -103,19 +137,24 @@ const DateTimeInput = () => {
               const isSelected = selectedDate
                 ? isEqual(startOfDay(selectedDate), normalizedDate)
                 : false;
-              const isHoliday = holidays.some((holiday: Holiday) => {
+              const isHoliday = holidays.some((holiday: DayData) => {
                 const holidayDate = startOfDay(new Date(holiday.date));
                 return isEqual(holidayDate, normalizedDate);
+              });
+              const isObservance = observances.some((observance: DayData) => {
+                const observanceDate = startOfDay(new Date(observance.date));
+                return isEqual(observanceDate, normalizedDate);
               });
               const isSunday = d.getDay() === 0;
               const isToday = isEqual(startOfDay(new Date()), normalizedDate);
 
-              const baseClass = "w-8 h-8 m-0.5 flex items-center justify-center rounded-full";
+              const baseClass =
+                "w-8 h-8 m-0.5 flex items-center justify-center rounded-full cursor-pointer";
               const hoverClass = "hover:bg-[#761BE4] hover:text-white";
               let statusClass = "";
               if (isSelected) {
                 statusClass = "bg-[#761BE4] text-white";
-              } else if (isHoliday || isSunday || isToday) {
+              } else if (isHoliday || isSunday || isToday || isObservance) {
                 statusClass = "text-[#898DA9]";
               }
 
