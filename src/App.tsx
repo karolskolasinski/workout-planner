@@ -34,7 +34,7 @@ function App() {
         Your workout
       </h1>
 
-      <DateTimeInput id="datetime" label="Date" />
+      <DateTimeInput />
     </div>
   );
 }
