@@ -1,20 +1,30 @@
 import { useState } from "react";
+import _ from "lodash";
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
+  onFileSelect: (value: ((prevState: File | null) => File | null) | File | null) => void;
 }
 
 const FileInput = (props: InputProps) => {
+  const { onFileSelect } = props;
+  const cleanProps = _.omit(props, ["onFileSelect"]);
   const [file, setFile] = useState<File | null>(null);
+
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    const droppedFile = e.dataTransfer?.files[0];
+    const droppedFile = e.dataTransfer?.files[0] ?? null;
+    handleFile(droppedFile);
+  };
+
+  function handleFile(droppedFile: File | null) {
     if (droppedFile && droppedFile.type.startsWith("image/")) {
       setFile(droppedFile);
+      onFileSelect(droppedFile);
     } else {
       alert("Only image files are accepted.");
     }
-  };
+  }
 
   const dropAreaClass =
     `w-full h-24 border border-[#CBB6E5] rounded-lg bg-white flex justify-center items-center`;
@@ -26,11 +36,11 @@ const FileInput = (props: InputProps) => {
       {dropAreaContent()}
 
       <input
-        {...props}
+        {...cleanProps}
         accept="image/*"
         multiple={false}
         className="hidden"
-        onChange={(e) => setFile(e.target.files?.item(0) ?? null)}
+        onChange={(e) => handleFile(e.target.files?.item(0) ?? null)}
       />
     </div>
   );

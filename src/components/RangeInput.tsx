@@ -1,13 +1,21 @@
 import { useEffect, useRef, useState } from "react";
+import _ from "lodash";
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
+  onRangeInput: (value: ((prevState: number) => number) | number) => void;
 }
 
 const INITIAL_POSITION = 10.5;
 
 const RangeInput = (props: InputProps) => {
+  const cleanProps = _.omit(props, ["onRangeInput"]);
   const [value, setValue] = useState(Number(props.min));
+  const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = Number((e.target as HTMLInputElement).value);
+    setValue(value);
+    props.onRangeInput(value);
+  };
   const [tooltipPosition, setTooltipPosition] = useState(-INITIAL_POSITION);
   const rangeRef = useRef(null);
 
@@ -35,11 +43,11 @@ const RangeInput = (props: InputProps) => {
         <div className="relative h-0 w-full">
           <input
             ref={rangeRef}
-            {...props}
+            {...cleanProps}
             type="range"
             defaultValue={props.min}
             className="appearance-none bg-[#CBB6E5] h-1 rounded-lg range w-full"
-            onChange={(e) => setValue(Number((e.target as HTMLInputElement).value))}
+            onChange={onChangeHandler}
           />
 
           <div

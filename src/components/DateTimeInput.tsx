@@ -3,6 +3,9 @@ import { addMonths, eachDayOfInterval, format, isEqual, startOfDay, subMonths } 
 import { infoBox } from "./infoBox.tsx";
 import { TimePicker } from "./TimePicker.tsx";
 
+type InputProps = {
+  onDateTimeSelect: (value: ((prevState: Date | null) => Date | null) | Date | null) => void;
+};
 type DayData = {
   country: string;
   date: string;
@@ -15,7 +18,7 @@ type DayData = {
 
 const WEEKDAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
 
-const DateTimeInput = () => {
+const DateTimeInput = (props: InputProps) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [infoText, setInfoText] = useState("");
   const [holidays, setHolidays] = useState<DayData[]>([]);
@@ -39,8 +42,9 @@ const DateTimeInput = () => {
     setInfoText("");
   };
 
-  const handleDateSelect = (day: Date) => {
-    let infoText = "";
+  const handleDateSelect = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, day: Date) => {
+    e.preventDefault();
+    let infoText: string;
     const selectedDate = startOfDay(day);
     const holiday = holidays.find((holiday) => {
       const holidayDate = startOfDay(new Date(holiday.date));
@@ -149,7 +153,7 @@ const DateTimeInput = () => {
               const isToday = isEqual(startOfDay(new Date()), normalizedDate);
 
               const baseClass =
-                "w-8 h-8 m-0.5 flex items-center justify-center rounded-full cursor-pointer";
+                "w-8 h-8 m-0.5 text-center rounded-full cursor-pointer outline-none ";
               const hoverClass = "hover:bg-[#761BE4] hover:text-white";
               let statusClass = "";
               if (isSelected) {
@@ -161,7 +165,7 @@ const DateTimeInput = () => {
               return (
                 <button
                   key={`day-${i}`}
-                  onClick={() => handleDateSelect(d)}
+                  onClick={(e) => handleDateSelect(e, d)}
                   className={`${baseClass} ${hoverClass} ${statusClass}`}
                 >
                   {format(d, "d")}
@@ -174,7 +178,12 @@ const DateTimeInput = () => {
         {infoText && infoBox("info", infoText)}
       </div>
 
-      {selectedDate && <TimePicker />}
+      {selectedDate && (
+        <TimePicker
+          onDateTimeSelect={props.onDateTimeSelect}
+          selectedDate={selectedDate}
+        />
+      )}
     </div>
   );
 };
