@@ -17,7 +17,7 @@ const TextInput = (props: InputProps) => {
 
       <input
         {...props}
-        className={`${bgClass} h-12 rounded-lg border ${borderClass} p-4`}
+        className={`${bgClass} h-12 rounded-lg border ${borderClass} p-4 focus:outline-2 focus:outline-[#761BE4]`}
         onChange={(e) => setErrorMsg(e.target.validationMessage)}
       />
 

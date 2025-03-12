@@ -1,5 +1,6 @@
 import TextInput from "./components/TextInput.tsx";
 import RangeInput from "./components/RangeInput.tsx";
+import FileInput from "./components/FileInput.tsx";
 
 function App() {
   return (
@@ -19,6 +20,12 @@ function App() {
         label="Age"
         min="8"
         max="100"
+      />
+
+      <FileInput
+        id="photo"
+        label="Photo"
+        type="file"
       />
     </div>
   );

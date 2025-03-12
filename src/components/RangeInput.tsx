@@ -21,7 +21,7 @@ const RangeInput = (props: InputProps) => {
   }, [value]);
 
   return (
-    <div className="flex flex-col gap-2 leading-none">
+    <div className="flex flex-col gap-2 leading-none pb-14">
       <label htmlFor={props.id}>
         {props.label}
       </label>
