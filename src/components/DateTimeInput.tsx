@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { addMonths, eachDayOfInterval, format, isEqual, startOfDay, subMonths } from "date-fns";
 import { infoBox } from "./infoBox.tsx";
 import { TimePicker } from "./TimePicker.tsx";
+import Spinner from "./Spinner.tsx";
 
 type InputProps = {
   onDateTimeSelect: (value: ((prevState: Date | null) => Date | null) | Date | null) => void;
@@ -61,16 +62,13 @@ const DateTimeInput = (props: InputProps) => {
     e.preventDefault();
     let infoText: string;
     const selectedDate = startOfDay(day);
-    const holiday = holidays.find((holiday) => {
-      const holidayDate = startOfDay(new Date(holiday.date));
-      return isEqual(holidayDate, selectedDate);
-    });
+    const findDay = (days: DayData[]) =>
+      days.find((d) => isEqual(startOfDay(new Date(d.date)), selectedDate));
+
+    const holiday = findDay(holidays);
     infoText = holiday ? "It is " + holiday.name : "";
 
-    const observance = observances.find((observance) => {
-      const observanceDate = startOfDay(new Date(observance.date));
-      return isEqual(observanceDate, selectedDate);
-    });
+    const observance = findDay(observances);
     if (holiday && observance) {
       infoText += " and ";
     }
@@ -94,7 +92,7 @@ const DateTimeInput = (props: InputProps) => {
   return (
     <div className="flex gap-6">
       <div className="flex flex-col gap-2 leading-none">
-        Date
+        <div className="flex gap-2">Date {!observances.length && <Spinner />}</div>
 
         <div className="w-[326px] p-4 bg-white rounded-lg leading-none text-[#000853] border border-[#CBB6E5]">
           <div className="grid grid-cols-7 h-8 items-center text-center mb-8">
@@ -108,9 +106,7 @@ const DateTimeInput = (props: InputProps) => {
               </svg>
             </button>
 
-            <div className="col-span-5">
-              {format(currentDate, "MMMM yyyy")}
-            </div>
+            <div className="col-span-5">{format(currentDate, "MMMM yyyy")}</div>
 
             <button onClick={handleNextMonth} className="flex justify-center">
               <svg
