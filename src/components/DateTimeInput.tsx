@@ -15,8 +15,23 @@ type DayData = {
   type: string;
   year: number;
 };
+type SetEvents = React.Dispatch<React.SetStateAction<DayData[]>>;
+type MouseClickEvent = React.MouseEvent<HTMLButtonElement, MouseEvent>;
 
 const WEEKDAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+const API_URL = import.meta.env.VITE_API_URL;
+const API_KEY = import.meta.env.VITE_API_KEY;
+
+const fetchEvents = async (type: string, setState: SetEvents) => {
+  try {
+    const url = `${API_URL}?country=PL&type=${type}`;
+    const response = await fetch(url, { headers: { "X-Api-Key": API_KEY } });
+    const data = await response.json();
+    setState(data);
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 const DateTimeInput = (props: InputProps) => {
   const { onDateTimeSelect } = props;
@@ -32,14 +47,14 @@ const DateTimeInput = (props: InputProps) => {
   const firstDayIndex = start.getDay();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
-  const handlePrevMonth = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handlePrevMonth = (e: MouseClickEvent) => {
     e.preventDefault();
     setCurrentDate(subMonths(currentDate, 1));
     setSelectedDate(null);
     setInfoText("");
     onDateTimeSelect(null);
   };
-  const handleNextMonth = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleNextMonth = (e: MouseClickEvent) => {
     e.preventDefault();
     setCurrentDate(addMonths(currentDate, 1));
     setSelectedDate(null);
@@ -47,7 +62,7 @@ const DateTimeInput = (props: InputProps) => {
     onDateTimeSelect(null);
   };
 
-  const handleDateSelect = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, day: Date) => {
+  const handleDateSelect = (e: MouseClickEvent, day: Date) => {
     e.preventDefault();
     let infoText: string;
     const selectedDate = startOfDay(day);
@@ -77,30 +92,8 @@ const DateTimeInput = (props: InputProps) => {
   };
 
   useEffect(() => {
-    function fetchEvents(type: string) {
-      return async () => {
-        try {
-          const url = `${import.meta.env.VITE_API_URL}?country=PL&type=${type}`;
-          const response = await fetch(url, {
-            headers: { "X-Api-Key": import.meta.env.VITE_API_KEY },
-          });
-          const data = await response.json();
-          if (type === "national_holiday") {
-            setHolidays(data);
-          } else if (type === "observance") {
-            setObservances(data);
-          }
-        } catch (error) {
-          console.error(error);
-        }
-      };
-    }
-
-    const fetchHolidays = fetchEvents("national_holiday");
-    const fetchObservance = fetchEvents("observance");
-
-    fetchHolidays();
-    fetchObservance();
+    fetchEvents("national_holiday", setHolidays);
+    fetchEvents("observance", setObservances);
   }, [currentDate]);
 
   return (
