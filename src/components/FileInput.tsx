@@ -10,7 +10,7 @@ const FileInput = (props: InputProps) => {
   const { onFileSelect } = props;
   const cleanProps = _.omit(props, ["onFileSelect"]);
   const [file, setFile] = useState<File | null>(null);
-  const fileInputRef = useRef(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -23,7 +23,7 @@ const FileInput = (props: InputProps) => {
       setFile(null);
       onFileSelect(null);
       if (fileInputRef.current) {
-        (fileInputRef.current as HTMLInputElement).value = "";
+        fileInputRef.current.value = "";
       }
       return;
     }
@@ -35,9 +35,6 @@ const FileInput = (props: InputProps) => {
       alert("Only image files are accepted.");
     }
   }
-
-  const dropAreaClass =
-    `w-full h-24 border border-[#CBB6E5] rounded-lg bg-white flex justify-center items-center`;
 
   return (
     <div className="flex flex-col gap-2 leading-none relative">
@@ -59,7 +56,7 @@ const FileInput = (props: InputProps) => {
   function dropAreaContent() {
     if (file) {
       return (
-        <div className={dropAreaClass}>
+        <div className="w-full h-24 border border-[#CBB6E5] rounded-lg bg-white flex justify-center items-center">
           <span className="text-[#000853] pr-2">{file.name}</span>
           <svg
             viewBox="0 0 20 20"
@@ -75,7 +72,7 @@ const FileInput = (props: InputProps) => {
 
     return (
       <div
-        className={dropAreaClass}
+        className="w-full h-24 border border-[#CBB6E5] rounded-lg bg-white flex justify-center items-center"
         onDrop={handleDrop}
         onDragOver={(e) => e.preventDefault()}
       >

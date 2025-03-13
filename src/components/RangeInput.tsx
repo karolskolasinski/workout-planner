@@ -12,15 +12,15 @@ const RangeInput = (props: InputProps) => {
   const cleanProps = _.omit(props, ["onRangeInput"]);
   const [value, setValue] = useState(Number(props.min));
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Number((e.target as HTMLInputElement).value);
+    const value = Number(e.target.value);
     setValue(value);
     props.onRangeInput(value);
   };
   const [tooltipPosition, setTooltipPosition] = useState(-INITIAL_POSITION);
-  const rangeRef = useRef(null);
+  const rangeRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const range = rangeRef.current! as HTMLInputElement;
+    const range = rangeRef.current!;
     const rangeWidth = range.getBoundingClientRect().width - 16;
     const percentage = (value - Number(range.min)) / (Number(range.max) - Number(range.min));
     const position = percentage * rangeWidth;
