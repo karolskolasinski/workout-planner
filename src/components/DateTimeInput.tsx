@@ -89,6 +89,28 @@ const DateTimeInput = (props: InputProps) => {
     fetchEvents("observance", setObservances);
   }, [currentDate]);
 
+  const timeMap = (days: DayData[]) => days.map(({ date }) => startOfDay(new Date(date)).getTime());
+  const holidaysSet = new Set(timeMap(holidays));
+  const observancesSet = new Set(timeMap(observances));
+
+  const getStatusClass = (d: Date, selectedDate: Date | null): string => {
+    const normalizedDate = startOfDay(d).getTime();
+    const isSelected = selectedDate ? startOfDay(selectedDate).getTime() === normalizedDate : false;
+    const isHoliday = holidaysSet.has(normalizedDate);
+    const isObservance = observancesSet.has(normalizedDate);
+    const isSunday = d.getDay() === 0;
+    const isToday = startOfDay(new Date()).getTime() === normalizedDate;
+
+    if (isSelected) {
+      return "bg-[#761BE4] text-white";
+    }
+    if (isHoliday || isSunday || isToday || isObservance) {
+      return "text-[#898DA9]";
+    }
+
+    return "";
+  };
+
   return (
     <div className="flex gap-6">
       <div className="flex flex-col gap-2 leading-none">
@@ -128,30 +150,8 @@ const DateTimeInput = (props: InputProps) => {
               <div key={`empty-${i}`} />
             ))}
 
-            {daysInMonth.map((d: Date, i: number) => {
-              const normalizedDate = startOfDay(d);
-
-              const isSelected = selectedDate
-                ? isEqual(startOfDay(selectedDate), normalizedDate)
-                : false;
-              const isHoliday = holidays.some((holiday: DayData) => {
-                const holidayDate = startOfDay(new Date(holiday.date));
-                return isEqual(holidayDate, normalizedDate);
-              });
-              const isObservance = observances.some((observance: DayData) => {
-                const observanceDate = startOfDay(new Date(observance.date));
-                return isEqual(observanceDate, normalizedDate);
-              });
-              const isSunday = d.getDay() === 0;
-              const isToday = isEqual(startOfDay(new Date()), normalizedDate);
-
-              let statusClass = "";
-              if (isSelected) {
-                statusClass = "bg-[#761BE4] text-white";
-              } else if (isHoliday || isSunday || isToday || isObservance) {
-                statusClass = "text-[#898DA9]";
-              }
-
+            {daysInMonth.map((d, i) => {
+              const statusClass = getStatusClass(d, selectedDate);
               return (
                 <button
                   key={`day-${i}`}
