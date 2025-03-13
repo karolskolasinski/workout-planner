@@ -47,7 +47,7 @@ const DateTimeInput = (props: InputProps) => {
   const firstDayIndex = start.getDay();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
-  const changeMonth = (offset: number) => (e: MouseEvent) => {
+  const changeMonth = (offset: number) => (e: MouseClickEvent) => {
     e.preventDefault();
     setCurrentDate(offset > 0 ? addMonths(currentDate, offset) : subMonths(currentDate, -offset));
     setSelectedDate(null);
@@ -108,7 +108,9 @@ const DateTimeInput = (props: InputProps) => {
               </svg>
             </button>
 
-            <span className="col-span-5">{format(currentDate, "MMMM yyyy")}</span>
+            <div className="col-span-5">
+              {format(currentDate, "MMMM yyyy")}
+            </div>
 
             <button onClick={handleNextMonth} className="flex justify-center">
               <svg
