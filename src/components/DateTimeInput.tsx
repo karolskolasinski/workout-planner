@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { addMonths, eachDayOfInterval, format, isEqual, startOfDay, subMonths } from "date-fns";
-import { infoBox } from "./infoBox.tsx";
 import { TimePicker } from "./TimePicker.tsx";
 import Spinner from "./Spinner.tsx";
+import InfoBox from "./InfoBox.tsx";
 
 type InputProps = {
   onDateTimeSelect: (value: ((prevState: Date | null) => Date | null) | Date | null) => void;
@@ -165,7 +165,7 @@ const DateTimeInput = (props: InputProps) => {
           </div>
         </div>
 
-        {infoText && infoBox("info", infoText)}
+        {infoText && <InfoBox level="info" text={infoText} />}
       </div>
 
       {selectedDate && (

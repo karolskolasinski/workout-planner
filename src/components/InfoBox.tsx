@@ -1,7 +1,14 @@
 type Level = "info" | "error";
 
-export function infoBox(level: Level, text: string) {
+type Props = {
+  level: Level;
+  text: string;
+};
+
+const InfoBox = (props: Props) => {
+  const { level, text } = props;
   let icon = <></>;
+
   switch (level) {
     case "info":
       icon = (
@@ -35,4 +42,6 @@ export function infoBox(level: Level, text: string) {
       {text}
     </div>
   );
-}
+};
+
+export default InfoBox;

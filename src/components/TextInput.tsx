@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { infoBox } from "./infoBox.tsx";
 import _ from "lodash";
+import InfoBox from "./InfoBox.tsx";
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -34,7 +34,7 @@ const TextInput = (props: InputProps) => {
         onChange={onChangeHandler}
       />
 
-      {errorMsg && infoBox("error", errorMsg)}
+      {errorMsg && <InfoBox level="error" text={errorMsg} />}
     </div>
   );
 };
