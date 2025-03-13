@@ -77,31 +77,27 @@ const DateTimeInput = (props: InputProps) => {
   };
 
   useEffect(() => {
-    const fetchHolidays = async () => {
-      try {
-        const url = `${import.meta.env.VITE_API_URL}?country=PL&type=national_holiday`;
-        const response = await fetch(url, {
-          headers: { "X-Api-Key": import.meta.env.VITE_API_KEY },
-        });
-        const data = await response.json();
-        setHolidays(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+    function fetchEvents(type: string) {
+      return async () => {
+        try {
+          const url = `${import.meta.env.VITE_API_URL}?country=PL&type=${type}`;
+          const response = await fetch(url, {
+            headers: { "X-Api-Key": import.meta.env.VITE_API_KEY },
+          });
+          const data = await response.json();
+          if (type === "national_holiday") {
+            setHolidays(data);
+          } else if (type === "observance") {
+            setObservances(data);
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      };
+    }
 
-    const fetchObservance = async () => {
-      try {
-        const url = `${import.meta.env.VITE_API_URL}?country=PL&type=observance`;
-        const response = await fetch(url, {
-          headers: { "X-Api-Key": import.meta.env.VITE_API_KEY },
-        });
-        const data = await response.json();
-        setObservances(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+    const fetchHolidays = fetchEvents("national_holiday");
+    const fetchObservance = fetchEvents("observance");
 
     fetchHolidays();
     fetchObservance();
@@ -163,9 +159,6 @@ const DateTimeInput = (props: InputProps) => {
               const isSunday = d.getDay() === 0;
               const isToday = isEqual(startOfDay(new Date()), normalizedDate);
 
-              const baseClass =
-                "w-8 h-8 m-0.5 text-center rounded-full cursor-pointer outline-none ";
-              const hoverClass = "hover:bg-[#761BE4] hover:text-white";
               let statusClass = "";
               if (isSelected) {
                 statusClass = "bg-[#761BE4] text-white";
@@ -177,7 +170,7 @@ const DateTimeInput = (props: InputProps) => {
                 <button
                   key={`day-${i}`}
                   onClick={(e) => handleDateSelect(e, d)}
-                  className={`${baseClass} ${hoverClass} ${statusClass}`}
+                  className={`w-8 h-8 m-0.5 text-center rounded-full cursor-pointer outline-none hover:bg-[#761BE4] hover:text-white ${statusClass}`}
                 >
                   {format(d, "d")}
                 </button>
