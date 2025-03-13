@@ -47,20 +47,15 @@ const DateTimeInput = (props: InputProps) => {
   const firstDayIndex = start.getDay();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
-  const handlePrevMonth = (e: MouseClickEvent) => {
+  const changeMonth = (offset: number) => (e: MouseEvent) => {
     e.preventDefault();
-    setCurrentDate(subMonths(currentDate, 1));
+    setCurrentDate(offset > 0 ? addMonths(currentDate, offset) : subMonths(currentDate, -offset));
     setSelectedDate(null);
     setInfoText("");
     onDateTimeSelect(null);
   };
-  const handleNextMonth = (e: MouseClickEvent) => {
-    e.preventDefault();
-    setCurrentDate(addMonths(currentDate, 1));
-    setSelectedDate(null);
-    setInfoText("");
-    onDateTimeSelect(null);
-  };
+  const handlePrevMonth = changeMonth(-1);
+  const handleNextMonth = changeMonth(1);
 
   const handleDateSelect = (e: MouseClickEvent, day: Date) => {
     e.preventDefault();
