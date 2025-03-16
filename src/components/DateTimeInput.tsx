@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { addMonths, eachDayOfInterval, format, isEqual, startOfDay, subMonths } from "date-fns";
 import { TimePicker } from "./TimePicker.tsx";
 import Spinner from "./Spinner.tsx";
@@ -40,13 +40,19 @@ const DateTimeInput = (props: InputProps) => {
   const [infoText, setInfoText] = useState("");
   const [holidays, setHolidays] = useState<DayData[]>([]);
   const [observances, setObservances] = useState<DayData[]>([]);
-
-  const start = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-  const end = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-  const daysInMonth = eachDayOfInterval({ start, end });
-
-  const firstDayIndex = start.getDay();
+  const [daysInMonth, setDaysInMonth] = useState<Date[]>([]);
+  const [firstDayIndex, setFirstDayIndex] = useState<number>(0);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+
+  useMemo(() => {
+    const start = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const end = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+    const daysInMonth = eachDayOfInterval({ start, end });
+    setDaysInMonth(daysInMonth);
+
+    const firstDayIndex = start.getDay();
+    setFirstDayIndex(firstDayIndex);
+  }, [currentDate]);
 
   const changeMonth = (offset: number) => (e: MouseClickEvent) => {
     e.preventDefault();
