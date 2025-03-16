@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { addMonths, eachDayOfInterval, format, isEqual, startOfDay, subMonths } from "date-fns";
 import { TimePicker } from "./TimePicker.tsx";
 import Spinner from "./Spinner.tsx";
@@ -33,6 +33,8 @@ const fetchEvents = async (type: string, setState: SetEvents) => {
     console.error(error);
   }
 };
+
+const timeMap = (days: DayData[]) => days.map(({ date }) => startOfDay(new Date(date)).getTime());
 
 const DateTimeInput = (props: InputProps) => {
   const { onDateTimeSelect } = props;
@@ -95,9 +97,8 @@ const DateTimeInput = (props: InputProps) => {
     fetchEvents("observance", setObservances);
   }, [currentDate]);
 
-  const timeMap = (days: DayData[]) => days.map(({ date }) => startOfDay(new Date(date)).getTime());
-  const holidaysSet = new Set(timeMap(holidays));
-  const observancesSet = new Set(timeMap(observances));
+  const holidaysSet = useMemo(() => new Set(timeMap(holidays)), [holidays]);
+  const observancesSet = useMemo(() => new Set(timeMap(observances)), [observances]);
 
   const getStatusClass = (d: Date, selectedDate: Date | null): string => {
     const normalizedDate = startOfDay(d).getTime();
