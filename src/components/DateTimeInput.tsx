@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { addMonths, eachDayOfInterval, format, isEqual, startOfDay, subMonths } from "date-fns";
 import { TimePicker } from "./TimePicker.tsx";
 import Spinner from "./Spinner.tsx";
@@ -56,17 +56,17 @@ const DateTimeInput = (props: InputProps) => {
     setFirstDayIndex(firstDayIndex);
   }, [currentDate]);
 
-  const changeMonth = (offset: number) => (e: MouseClickEvent) => {
+  const changeMonth = useCallback((offset: number) => (e: MouseClickEvent) => {
     e.preventDefault();
-    setCurrentDate(offset > 0 ? addMonths(currentDate, offset) : subMonths(currentDate, -offset));
+    setCurrentDate((prev) => (offset > 0 ? addMonths(prev, offset) : subMonths(prev, -offset)));
     setSelectedDate(null);
     setInfoText("");
     onDateTimeSelect(null);
-  };
+  }, [onDateTimeSelect]);
   const handlePrevMonth = changeMonth(-1);
   const handleNextMonth = changeMonth(1);
 
-  const handleDateSelect = (e: MouseClickEvent, day: Date) => {
+  const handleDateSelect = useCallback((e: MouseClickEvent, day: Date) => {
     e.preventDefault();
     let infoText: string;
     const selectedDate = startOfDay(day);
@@ -90,7 +90,7 @@ const DateTimeInput = (props: InputProps) => {
       setSelectedDate(null);
       onDateTimeSelect(null);
     }
-  };
+  }, [holidays, observances, onDateTimeSelect]);
 
   useEffect(() => {
     fetchEvents("national_holiday", setHolidays);
@@ -176,10 +176,7 @@ const DateTimeInput = (props: InputProps) => {
       </div>
 
       {selectedDate && (
-        <TimePicker
-          onDateTimeSelect={props.onDateTimeSelect}
-          selectedDate={selectedDate}
-        />
+        <TimePicker onDateTimeSelect={props.onDateTimeSelect} selectedDate={selectedDate} />
       )}
     </div>
   );
