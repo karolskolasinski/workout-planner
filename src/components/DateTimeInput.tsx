@@ -42,18 +42,18 @@ const DateTimeInput = (props: InputProps) => {
   const [infoText, setInfoText] = useState("");
   const [holidays, setHolidays] = useState<DayData[]>([]);
   const [observances, setObservances] = useState<DayData[]>([]);
-  const [daysInMonth, setDaysInMonth] = useState<Date[]>([]);
-  const [firstDayIndex, setFirstDayIndex] = useState<number>(0);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
-  useMemo(() => {
+  const { daysInMonth, firstDayIndex } = useMemo(() => {
     const start = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
     const end = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-    const daysInMonth = eachDayOfInterval({ start, end });
-    setDaysInMonth(daysInMonth);
+    const days = eachDayOfInterval({ start, end });
+    const firstDay = start.getDay();
 
-    const firstDayIndex = start.getDay();
-    setFirstDayIndex(firstDayIndex);
+    return {
+      daysInMonth: days,
+      firstDayIndex: firstDay,
+    };
   }, [currentDate]);
 
   const changeMonth = useCallback((offset: number) => (e: MouseClickEvent) => {
