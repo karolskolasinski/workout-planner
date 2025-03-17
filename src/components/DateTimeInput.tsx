@@ -119,11 +119,11 @@ const DateTimeInput = (props: InputProps) => {
   };
 
   return (
-    <div className="flex gap-6">
+    <div className="flex gap-6 flex-col sm:flex-row">
       <div className="flex flex-col gap-2 leading-none">
         <div className="flex gap-2">Date {!observances.length && <Spinner />}</div>
 
-        <div className="w-[326px] p-4 bg-white rounded-lg leading-none text-[#000853] border border-[#CBB6E5]">
+        <div className="w-full max-w-[350px] sm:w-[326px] p-4 bg-white rounded-lg leading-none text-[#000853] border border-[#CBB6E5]">
           <div className="grid grid-cols-7 h-8 items-center text-center mb-8">
             <button onClick={handlePrevMonth} className="flex justify-center">
               <svg

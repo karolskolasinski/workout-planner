@@ -47,7 +47,10 @@ function App() {
   };
 
   return (
-    <form className="mx-auto w-[426px] py-30 flex flex-col gap-6" onSubmit={onSubmitHandler}>
+    <form
+      className="mx-auto w-full sm:w-[450px] py-30 px-6 flex flex-col gap-6"
+      onSubmit={onSubmitHandler}
+    >
       <h1 className="text-2xl pb-2">
         Personal info
       </h1>

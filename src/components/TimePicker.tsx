@@ -29,7 +29,7 @@ export const TimePicker = (props: TimePickerProps) => {
     <div className="flex flex-col gap-2 leading-none">
       Time
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-wrap sm:flex-col gap-2">
         {timeRow("12:00")}
         {timeRow("14:00")}
         {timeRow("16:30")}
